@@ -6,6 +6,7 @@
 using namespace std;
 
 //	*** NEED TO FIX GRAYSCALE, OUT OF RANGE VECTOR VALUES ***
+// *** Why is the casting from 4 bit the 8 bit issue happening ***
 
 int main(int argc, char* argv[])
 {
