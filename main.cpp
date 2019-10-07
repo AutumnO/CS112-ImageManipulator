@@ -229,7 +229,7 @@ int main(int argc, char* argv[])
 			break;
 
 		case 7:
-			if (i % 3 == 0)
+			if ((i % 3 == 0) && (i < int_data.size()-2))
 			{
 				value_1 = int_data[i];
 				value_2 = int_data[i + 1];
