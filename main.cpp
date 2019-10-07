@@ -5,7 +5,7 @@
 #include <sstream>
 using namespace std;
 
-//	*** NEED TO FIX GRAYSCALE, OUT OF RANGE VECTOR VALUES ***
+
 // *** Why is the casting from 4 bit the 8 bit issue happening ***
 
 int main(int argc, char* argv[])
@@ -237,7 +237,8 @@ int main(int argc, char* argv[])
 				average = ((value_1 + value_2 + value_3) / 3);
 				int_data[i] = average;
 				int_data[i + 1] = average;
-				int_data[i + 2] = average;
+				int_data[i + int(2)] = average; // 4 byte to 8 byte warning due to vs storing 1 as smaller value to save space, 
+												//		not an issue to be fixed but here int(2) tells it to store as an 8 byte value
 			}
 			break;
 
