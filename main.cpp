@@ -3,10 +3,12 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include <cmath>
+#include <ctime>
 using namespace std;
 
-
-// *** Why is the casting from 4 bit the 8 bit issue happening ***
+// *** CHECK ADD NOISE NOTES, DO I NEED TO ADD SAME AMOUNT TO ALL COLOR VALUES FOR A SINGLE PIXEL ***
+// *** NEED TO ADD REPEAT AND COMPOUNDING EFFECTS PLUS CHECK QUIT ***
 
 int main(int argc, char* argv[])
 {
@@ -38,40 +40,57 @@ int main(int argc, char* argv[])
 		<< "4. Negate Red" << endl
 		<< "5. Negate Green" << endl
 		<< "6. Negate Blue" << endl
-		<< "7. Grayscale" << endl << endl
+		<< "7. Grayscale" << endl
+		<< "8. Add Noise" << endl
+		<< "9. High Contrast" << endl
+		<< "Q. Quit" << endl << endl
 		<< "Selection: ";
 	cin >> img_effect_str;
-	img_effect = stoi(img_effect_str);
-
-	switch (img_effect)
+	
+	if (img_effect_str != "Q")
 	{
-		case 1:
-			img_effect_str = "Remove Red";
-			break;
-		case 2:
-			img_effect_str = "Remove Green";
-			break;
-		case 3:
-			img_effect_str = "Remove Blue";
-			break;
-		case 4:
-			img_effect_str = "Negate Red";
-			break;
-		case 5:
-			img_effect_str = "Negate Green";
-			break;
-		case 6:
-			img_effect_str = "Negate Blue";
-			break;
-		case 7:
-			img_effect_str = "Grayscale";
-			break;
-		default:
-			cout << "Invalid Effect Selection" << endl;
-			return EXIT_FAILURE;
-	}
-	cout << endl << endl << "Applying " << img_effect_str << " effect..." << endl;
+		img_effect = stoi(img_effect_str);
 
+		switch (img_effect)
+		{
+			case 1:
+				img_effect_str = "Remove Red";
+				break;
+			case 2:
+				img_effect_str = "Remove Green";
+				break;
+			case 3:
+				img_effect_str = "Remove Blue";
+				break;
+			case 4:
+				img_effect_str = "Negate Red";
+				break;
+			case 5:
+				img_effect_str = "Negate Green";
+				break;
+			case 6:
+				img_effect_str = "Negate Blue";
+				break;
+			case 7:
+				img_effect_str = "Grayscale";
+				break;
+			case 8:
+				img_effect_str = "Add Noise";
+				break;
+			case 9:
+				img_effect_str = "High Contrast";
+				break;
+			default:
+				cout << "Invalid Effect Selection" << endl;
+				return EXIT_FAILURE;
+		}
+		cout << endl << endl << "Applying " << img_effect_str << " effect..." << endl;
+	}
+	else
+	{
+		cout << endl << endl << "Program ending..." << endl;
+		return EXIT_SUCCESS;
+	}
 
 
 	ifstream fin;
@@ -181,6 +200,7 @@ int main(int argc, char* argv[])
 	int index_2;
 	int index_3;
 	int average;
+	int noise_change;
 
 	for (int i = 0; i < int_data.size(); i++) 
 	{
@@ -237,8 +257,31 @@ int main(int argc, char* argv[])
 				average = ((value_1 + value_2 + value_3) / 3);
 				int_data[i] = average;
 				int_data[i + 1] = average;
-				int_data[i + int(2)] = average; // 4 byte to 8 byte warning due to vs storing 1 as smaller value to save space, 
-												//		not an issue to be fixed but here int(2) tells it to store as an 8 byte value
+				int_data[i + 2] = average; // 4 byte to 8 byte warning due to vs storing 1 as smaller value to save space
+			}
+			break;
+
+		case 8:
+			noise_change = (rand() % 20 - 10);
+			int_data[i] += noise_change;
+			if (int_data[i] < 0)
+			{
+				int_data[i] = 0;
+			}
+			else if (int_data[i] > 255)
+			{
+				int_data[i] = 255;
+			}
+			break;
+
+		case 9:
+			if (int_data[i] > (255 / 2))
+			{
+				int_data[i] = 255;
+			}
+			else
+			{
+				int_data[i] = 0;
 			}
 			break;
 
