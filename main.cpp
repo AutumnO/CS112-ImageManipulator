@@ -7,7 +7,7 @@
 #include <ctime>
 using namespace std;
 
-// *** NEED TO ADD REPEAT AND COMPOUNDING EFFECTS ***
+// *** NEED TO FIX REPEAT AND COMPOUNDING EFFECTS ***
 
 int range_check(int value)
 {
@@ -153,11 +153,11 @@ int main(int argc, char* argv[])
 		<< "7. Grayscale" << endl
 		<< "8. Add Noise" << endl
 		<< "9. High Contrast" << endl
-		<< "Q. Quit" << endl << endl;
+		<< "Q. Quit" << endl;
 
 	while ((img_effect_str != "Q") && (img_effect_str != "q"))
 	{
-		cout << "Selection: ";
+		cout << endl << "Selection: ";
 		cin >> img_effect_str;
 
 		if ((img_effect_str != "Q") && (img_effect_str != "q"))
@@ -197,23 +197,18 @@ int main(int argc, char* argv[])
 				cout << "Invalid Effect Selection" << endl;
 				return EXIT_FAILURE;
 			}
-			cout << endl << endl << "Applying " << img_effect_str << " effect..." << endl;
+			cout << "Applying " << img_effect_str << " effect..." << endl;
 		}
 		else
 		{
-			cout << endl << endl << "Program ending..." << endl;
-			return EXIT_SUCCESS;
+			cout << endl << "Program ending..." << endl;
 		}
 
 		// APPLY EFFECTS
 
-		int c = 0;
 		int value_1;
 		int value_2;
 		int value_3;
-		int index_1;
-		int index_2;
-		int index_3;
 		int average;
 		int noise_change;
 
@@ -317,16 +312,15 @@ int main(int argc, char* argv[])
 				cout << "Invalid Effect Selection" << endl;
 			}
 		}
+	}
 
-		for (int i = 0; i < int_data.size(); i++) //prints the data
+	for (int i = 0; i < int_data.size(); i++) //prints the data
+	{
+		fout << " " << int_data[i];
+		if ((i + 1) % 12 == 0)
 		{
-			fout << " " << int_data[i];
-			if ((i + 1) % 12 == 0)
-			{
-				fout << endl;
-			}
+			fout << endl;
 		}
-
 	}
 
 	fin.close();
