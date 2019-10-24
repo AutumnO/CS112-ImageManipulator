@@ -3,10 +3,23 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include <cmath>
+#include <ctime>
 using namespace std;
 
 
-// *** Why is the casting from 4 bit the 8 bit issue happening ***
+int range_check(int value)
+{
+	if (value < 0)
+	{
+		value = 0;
+	}
+	else if (value > 255)
+	{
+		value = 255;
+	}
+	return value;
+}
 
 int main(int argc, char* argv[])
 {
@@ -30,49 +43,7 @@ int main(int argc, char* argv[])
 
 	cout << endl << "Enter destination file: ";
 	cin >> output_file;
-
-	cout << "*** Image Effects ***" << endl
-		<< "1. Remove Red" << endl
-		<< "2. Remove Green" << endl
-		<< "3. Remove Blue" << endl
-		<< "4. Negate Red" << endl
-		<< "5. Negate Green" << endl
-		<< "6. Negate Blue" << endl
-		<< "7. Grayscale" << endl << endl
-		<< "Selection: ";
-	cin >> img_effect_str;
-	img_effect = stoi(img_effect_str);
-
-	switch (img_effect)
-	{
-		case 1:
-			img_effect_str = "Remove Red";
-			break;
-		case 2:
-			img_effect_str = "Remove Green";
-			break;
-		case 3:
-			img_effect_str = "Remove Blue";
-			break;
-		case 4:
-			img_effect_str = "Negate Red";
-			break;
-		case 5:
-			img_effect_str = "Negate Green";
-			break;
-		case 6:
-			img_effect_str = "Negate Blue";
-			break;
-		case 7:
-			img_effect_str = "Grayscale";
-			break;
-		default:
-			cout << "Invalid Effect Selection" << endl;
-			return EXIT_FAILURE;
-	}
-	cout << endl << endl << "Applying " << img_effect_str << " effect..." << endl;
-
-
+	
 
 	ifstream fin;
 	fin.open(input_file);
@@ -110,8 +81,6 @@ int main(int argc, char* argv[])
 	fout << max_pixel << endl;
 
 	// int x = stoi(max_pixel); -- example of how to use stoi from AC
-
-
 
 	//write rest of data
 
@@ -173,90 +142,186 @@ int main(int argc, char* argv[])
 		//cout << "S: " << string_data[i] << endl;
 	}
 
-	int c = 0;
-	int value_1;
-	int value_2;
-	int value_3;
-	int index_1;
-	int index_2;
-	int index_3;
-	int average;
+	cout << endl << "*** Image Effects ***" << endl
+		<< "1. Remove Red" << endl
+		<< "2. Remove Green" << endl
+		<< "3. Remove Blue" << endl
+		<< "4. Negate Red" << endl
+		<< "5. Negate Green" << endl
+		<< "6. Negate Blue" << endl
+		<< "7. Grayscale" << endl
+		<< "8. Add Noise" << endl
+		<< "9. High Contrast" << endl
+		<< "Q. Quit" << endl;
 
-	for (int i = 0; i < int_data.size(); i++) 
+	while ((img_effect_str != "Q") && (img_effect_str != "q"))
 	{
-		switch (img_effect)
+		cout << endl << "Selection: ";
+		cin >> img_effect_str;
+
+		if ((img_effect_str != "Q") && (img_effect_str != "q"))
 		{
-		case 1:
-			if (i % 3 == 0) //red values to zero
-			{
-				int_data[i] -= int_data[i];
-			}
-			break;
+			img_effect = stoi(img_effect_str);
 
-		case 2:
-			if ((i + 2) % 3 == 0) //green values to zero
+			switch (img_effect)
 			{
-				int_data[i] -= int_data[i];
+			case 1:
+				img_effect_str = "Remove Red";
+				break;
+			case 2:
+				img_effect_str = "Remove Green";
+				break;
+			case 3:
+				img_effect_str = "Remove Blue";
+				break;
+			case 4:
+				img_effect_str = "Negate Red";
+				break;
+			case 5:
+				img_effect_str = "Negate Green";
+				break;
+			case 6:
+				img_effect_str = "Negate Blue";
+				break;
+			case 7:
+				img_effect_str = "Grayscale";
+				break;
+			case 8:
+				img_effect_str = "Add Noise";
+				break;
+			case 9:
+				img_effect_str = "High Contrast";
+				break;
+			default:
+				cout << "Invalid Effect Selection" << endl;
+				return EXIT_FAILURE;
 			}
+			cout << "Applying " << img_effect_str << " effect..." << endl;
+		}
+		else
+		{
+			cout << endl << "Program ending..." << endl;
 			break;
+		}
 
-		case 3:
-			if ((i + 1) % 3 == 0) //blue values to zero
-			{
-				int_data[i] -= int_data[i];
-			}
-			break;
+		// APPLY EFFECTS
 
-		case 4:
-			if (i % 3 == 0) //negate red
-			{
-				int_data[i] = 255 - int_data[i];
-			}
-			break;
+		int value_1;
+		int value_2;
+		int value_3;
+		int average;
+		int noise_change;
 
-		case 5:
-			if ((i + 2) % 3 == 0) //negate green
+		for (int i = 0; i < int_data.size(); i++)
+		{
+			switch (img_effect)
 			{
-				int_data[i] = 255 - int_data[i];
-			}
-			break;
+			case 1:
+				if (i % 3 == 0) //red values to zero
+				{
+					int_data[i] -= int_data[i];
+				}
+				break;
 
-		case 6:
-			if ((i + 1) % 3 == 0) //negate blue
-			{
-				int_data[i] = 255 - int_data[i];
-			}
-			break;
+			case 2:
+				if ((i + 2) % 3 == 0) //green values to zero
+				{
+					int_data[i] -= int_data[i];
+				}
+				break;
 
-		case 7:
-			if ((i % 3 == 0) && (i < int_data.size()-2))
-			{
-				value_1 = int_data[i];
-				value_2 = int_data[i + 1];
-				value_3 = int_data[i + 2];
-				average = ((value_1 + value_2 + value_3) / 3);
-				int_data[i] = average;
-				int_data[i + 1] = average;
-				int_data[i + int(2)] = average; // 4 byte to 8 byte warning due to vs storing 1 as smaller value to save space, 
-												//		not an issue to be fixed but here int(2) tells it to store as an 8 byte value
-			}
-			break;
+			case 3:
+				if ((i + 1) % 3 == 0) //blue values to zero
+				{
+					int_data[i] -= int_data[i];
+				}
+				break;
+
+			case 4:
+				if (i % 3 == 0) //negate red
+				{
+					int_data[i] = 255 - int_data[i];
+				}
+				break;
+
+			case 5:
+				if ((i + 2) % 3 == 0) //negate green
+				{
+					int_data[i] = 255 - int_data[i];
+				}
+				break;
+
+			case 6:
+				if ((i + 1) % 3 == 0) //negate blue
+				{
+					int_data[i] = 255 - int_data[i];
+				}
+				break;
+
+			case 7:
+				if ((i % 3 == 0) && (i < int_data.size() - 2)) //grayscale
+				{
+					value_1 = int_data[i];
+					value_2 = int_data[i + 1];
+					value_3 = int_data[i + 2];
+					average = ((value_1 + value_2 + value_3) / 3);
+					int_data[i] = average;
+					int_data[i + 1] = average;
+					int_data[i + 2] = average; // 4 byte to 8 byte warning due to vs storing 1 as smaller value to save space
+				}
+				break;
+
+			case 8:
+				if ((i % 3 == 0) && (i < int_data.size() - 2)) //random noise
+				{
+					noise_change = (rand() % 20 - 10);
+
+					if ((noise_change >= -10) && (noise_change <= 10))
+					{
+						value_1 = int_data[i] += noise_change;
+						value_2 = int_data[i + 1] += noise_change;
+						value_3 = int_data[i + 2] += noise_change;
+
+						value_1 = range_check(value_1);
+						value_2 = range_check(value_2);
+						value_3 = range_check(value_3);
+
+						int_data[i] = value_1;
+						int_data[i + 1] = value_2;
+						int_data[i + 2] = value_3;
+					}
+					else
+					{
+						cout << "Out of range Rand Value" << endl;
+					}
+				}
+				break;
+
+			case 9:
+				if (int_data[i] > (255 / 2))
+				{
+					int_data[i] = 255;
+				}
+				else
+				{
+					int_data[i] = 0;
+				}
+				break;
 
 			default:
 				cout << "Invalid Effect Selection" << endl;
+			}
 		}
-	}	
+	}
 
 	for (int i = 0; i < int_data.size(); i++) //prints the data
 	{
 		fout << " " << int_data[i];
-		if ((i+1) % 12 == 0)
+		if ((i + 1) % 12 == 0)
 		{
 			fout << endl;
 		}
 	}
-
-
 
 	fin.close();
 	fout.close();
