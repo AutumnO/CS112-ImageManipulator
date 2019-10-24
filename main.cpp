@@ -7,7 +7,6 @@
 #include <ctime>
 using namespace std;
 
-// *** NEED TO FIX REPEAT AND COMPOUNDING EFFECTS ***
 
 int range_check(int value)
 {
@@ -202,6 +201,7 @@ int main(int argc, char* argv[])
 		else
 		{
 			cout << endl << "Program ending..." << endl;
+			break;
 		}
 
 		// APPLY EFFECTS
