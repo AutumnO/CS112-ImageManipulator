@@ -397,19 +397,17 @@ int main(int argc, char* argv[])
 			switch (img_effect)
 			{
 			case 10:
-				// data = flip_horizontal(data, num_rows, num_cols);
-				cout << "RowC: " << row_counter << endl
-					<< "ColC: " << col_counter << endl;
-				if (row_counter < 0)
+				if (row_counter >= 0)
 				{
-					cout << "Data at RC: " << data[row_counter][col_counter] << endl;
 					for (int i = 0; i < temp.size(); i++)
 					{
-						for (int j = 0; j < temp[i].size(); j++)
+						col_counter = (num_cols - 1);
+						for (int j = 0; j < temp[i].size(); j += 3)
 						{
-							cout << "R" << i << " C" << j << ": " << temp[i][j] << endl;
-							data[row_counter][col_counter] = temp[i][j];
-							col_counter -= 1;
+							data[i][col_counter - 2] = temp[i][j]; //switched row_counter to i in data
+							data[i][col_counter - 1] = temp[i][j + 1];
+							data[i][col_counter] = temp[i][j + 2];
+							col_counter -= 3;
 						}
 						row_counter -= 1;
 					}
