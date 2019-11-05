@@ -23,28 +23,12 @@ int range_check(int value)
 	return value;
 }
 
-vector<vector<int>> flip_horizontal(vector<vector<int>> data, int num_rows, int num_cols) // not currently used
+vector<vector<int>> flip_horizontal(vector<vector<int>> data, int num_rows, int num_cols) // not currently used!!
 {
 	vector<vector<int>> temp = data;
 	int row_counter = (num_rows - 1);
 	int col_counter = (num_cols - 1);
 
-	// cout << "RowC: " << row_counter << endl
-	//	<< "ColC: " << col_counter << endl;
-	while (row_counter < 0)
-	{
-		cout << "Data at RC: " << data[row_counter][col_counter] << endl;
-		for (int i = 0; i < temp.size(); i++)
-		{
-			for (int j = 0; j < temp[i].size(); j++)
-			{
-				cout << "R" << i << " C" << j << ": " << temp[i][j] << endl;
-				data[row_counter][col_counter] = temp[i][j];
-				col_counter -= 1;
-			}
-			row_counter -= 1;
-		}
-	}
 	return data;
 }
 
@@ -219,6 +203,7 @@ int main(int argc, char* argv[])
 		<< "8. Add Noise" << endl
 		<< "9. High Contrast" << endl
 		<< "10. Flip Horizontally" << endl
+		<< "11. Flip Vertically" << endl
 		<< "Q. Quit" << endl;
 
 	while ((img_effect_str != "Q") && (img_effect_str != "q"))
@@ -261,6 +246,9 @@ int main(int argc, char* argv[])
 				break;
 			case 10:
 				img_effect_str = "Flip Horizontally";
+				break;
+			case 11:
+				img_effect_str = "Flip Vertically";
 				break;
 			default:
 				cout << "Invalid Effect Selection" << endl;
@@ -414,8 +402,19 @@ int main(int argc, char* argv[])
 				}
 				break;
 
-				default:
-					cout << "Invalid Effect Selection" << endl;
+			case 11:
+				if (row_counter >= 0)
+				{
+					for (int i = 0; i < temp.size(); i++)
+					{
+						data[row_counter] = temp[i];
+						row_counter -= 1;
+					}
+				}
+				break;
+
+			default:
+				cout << "Invalid Effect Selection" << endl;
 			}
 		}
 	}
