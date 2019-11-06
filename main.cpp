@@ -8,7 +8,7 @@
 using namespace std;
 
 // May want to create classes later
-// ****** WHY IS THE ROW COUNTER IF LOOP BEING SKIPPED?!?!?!?!?!?! ********
+// ****** My blur effect although running 10 times, seems less blurred than example pic
 
 int range_check(int value)
 {
@@ -204,6 +204,7 @@ int main(int argc, char* argv[])
 		<< "9. High Contrast" << endl
 		<< "10. Flip Horizontally" << endl
 		<< "11. Flip Vertically" << endl
+		<< "12. Blur" << endl
 		<< "Q. Quit" << endl;
 
 	while ((img_effect_str != "Q") && (img_effect_str != "q"))
@@ -250,6 +251,9 @@ int main(int argc, char* argv[])
 			case 11:
 				img_effect_str = "Flip Vertically";
 				break;
+			case 12:
+				img_effect_str = "Blur";
+				break;
 			default:
 				cout << "Invalid Effect Selection" << endl;
 				return EXIT_FAILURE;
@@ -268,11 +272,12 @@ int main(int argc, char* argv[])
 		int row_counter = (num_rows - 1);
 		int col_counter = (num_cols - 1);
 
-		int value_1;
-		int value_2;
-		int value_3;
-		int average;
+		int value_1 = 0;
+		int value_2 = 0;
+		int value_3 = 0;
+		int average = 0;
 		int noise_change;
+		int blur_extent = 10;
 
 		if (img_effect < 10)
 		{
@@ -384,7 +389,7 @@ int main(int argc, char* argv[])
 		{
 			switch (img_effect)
 			{
-			case 10:
+			case 10:									// flip horizontally
 				if (row_counter >= 0)
 				{
 					for (int i = 0; i < temp.size(); i++)
@@ -392,7 +397,7 @@ int main(int argc, char* argv[])
 						col_counter = (num_cols - 1);
 						for (int j = 0; j < temp[i].size(); j += 3)
 						{
-							data[i][col_counter - 2] = temp[i][j]; //switched row_counter to i in data
+							data[i][col_counter - 2] = temp[i][j];
 							data[i][col_counter - 1] = temp[i][j + 1];
 							data[i][col_counter] = temp[i][j + 2];
 							col_counter -= 3;
@@ -402,13 +407,81 @@ int main(int argc, char* argv[])
 				}
 				break;
 
-			case 11:
+			case 11:									// flip vertically
 				if (row_counter >= 0)
 				{
 					for (int i = 0; i < temp.size(); i++)
 					{
 						data[row_counter] = temp[i];
 						row_counter -= 1;
+					}
+				}
+				break;
+
+			case 12:
+				if (row_counter >= 0)
+				{
+					for (int c = 0; c < blur_extent; c++)
+					{
+						temp = data;
+						for (int i = 0; i < data.size(); i++) // change for each row
+						{
+							for (int j = 0; j < data[i].size(); j++)
+							{
+								if ((j == 0) || (j == 1) || (j == 2))
+								{
+									value_1 = temp[i][j];
+									value_2 = temp[i][j + 3];
+									average = ((value_1 + value_2) / 2);
+									data[i][j] = average;
+								}
+								else if ((j == col_counter) || (j == (col_counter - 1)) || (j == (col_counter - 2)))
+								{
+									value_1 = temp[i][j - 3];
+									value_2 = temp[i][j];
+									average = ((value_1 + value_2) / 2);
+									data[i][j] = average;
+								}
+								else
+								{
+									value_1 = temp[i][j - 3];
+									value_2 = temp[i][j];
+									value_3 = temp[i][j + 3];
+									average = ((value_1 + value_2 + value_3) / 3);
+									data[i][j] = average;
+								}
+							}
+						}
+
+						temp = data;
+						for (int j = 0; j < num_cols; j++) // change for each column
+						{
+							for (int i = 0; i < num_rows; i++)
+							{
+								if (i == 0)
+								{
+									value_1 = temp[i][j];
+									value_2 = temp[i + 1][j];
+									average = ((value_1 + value_2) / 2);
+									data[i][j] = average;
+								}
+								else if (i == (num_rows - 1))
+								{
+									value_1 = temp[i - 1][j];
+									value_2 = temp[i][j];
+									average = ((value_1 + value_2) / 2);
+									data[i][j] = average;
+								}
+								else
+								{
+									value_1 = temp[i - 1][j];
+									value_2 = temp[i][j];
+									value_3 = temp[i + 1][j];
+									average = ((value_1 + value_2 + value_3) / 3);
+									data[i][j] = average;
+								}
+							}
+						}
 					}
 				}
 				break;
