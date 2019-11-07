@@ -9,6 +9,8 @@ using namespace std;
 
 // May want to create classes later
 // ****** My blur effect although running 10 times, seems less blurred than example pic
+// ****** Need to fix pixelate issue with files that are less than distance (if num_rows/num_cols is under distance
+//				for each value in row/col set to index 0 values
 
 int range_check(int value)
 {
@@ -205,6 +207,7 @@ int main(int argc, char* argv[])
 		<< "10. Flip Horizontally" << endl
 		<< "11. Flip Vertically" << endl
 		<< "12. Blur" << endl
+		<< "13. Pixelate" << endl
 		<< "Q. Quit" << endl;
 
 	while ((img_effect_str != "Q") && (img_effect_str != "q"))
@@ -254,6 +257,9 @@ int main(int argc, char* argv[])
 			case 12:
 				img_effect_str = "Blur";
 				break;
+			case 13:
+				img_effect_str = "Pixelate";
+				break;
 			default:
 				cout << "Invalid Effect Selection" << endl;
 				return EXIT_FAILURE;
@@ -278,6 +284,7 @@ int main(int argc, char* argv[])
 		int average = 0;
 		int noise_change;
 		int blur_extent = 10;
+		int distance = 5;
 
 		if (img_effect < 10)
 		{
@@ -484,6 +491,33 @@ int main(int argc, char* argv[])
 						}
 					}
 				}
+				break;
+
+			case 13:			// pixelate
+				for (int i = 0; i < num_rows; i++)
+				{
+					for (int j = 0; (j + (distance * 3)) <= num_cols; j += (distance * 3))	// horizontal pixelization
+					{
+						for (int d = 1; d < distance; d++)
+						{
+							data[i][j + (d * 3)] = temp[i][j];
+							data[i][(j + 1) + (d * 3)] = temp[i][j + 1];
+							data[i][(j + 2) + (d * 3)] = temp[i][j + 2];
+						}
+					}
+				}
+
+				for (int i = 0; (i + distance) <= num_rows; i += distance)
+				{
+					for (int j = 0; j <= col_counter; j++)	// vertical pixelization
+					{
+						for (int d = 0; d < distance; d++)
+						{
+							data[i + d][j] = data[i][j];
+						}
+					}
+				}
+				
 				break;
 
 			default:
