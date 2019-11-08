@@ -9,8 +9,8 @@ using namespace std;
 
 // May want to create classes later
 // ****** My blur effect although running 10 times, seems less blurred than example pic
-// ****** Need to fix pixelate issue with files that are less than distance (if num_rows/num_cols is under distance
-//				for each value in row/col set to index 0 values
+// ****** smiley.ppm doesn't work (credit line?)
+// ****** better way to check pixelate needed, not sure if working correctly
 
 int range_check(int value)
 {
@@ -43,11 +43,8 @@ int main(int argc, char* argv[])
 	string img_effect_str;
 	int img_effect;
 	string format;
-	string width_line;
-	string height_line;
-	int width; // change these three to ints
+	int width;
 	int height;
-	string max_pixel_line;
 	int max_pixel;
 	string next_line;
 
@@ -78,22 +75,13 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	getline(fin, format);			//print image format
-	fout << format << endl;
+	fin >> format;			//print image format
 
-	getline(fin, width_line, ' ');		// print width
-	width = stoi(width_line);
-	fout << width << " ";
+	fin >> width;		// print width
 
-	getline(fin, height_line);		// print height
-	height = stoi(height_line);
-	fout << height << endl;
+	fin >> height;		// print height
 
-	getline(fin, max_pixel_line);		//print max pixel value
-	max_pixel = stoi(max_pixel_line);
-	fout << max_pixel << endl;
-
-	// int x = stoi(max_pixel); -- example of how to use stoi from AC
+	fin >> max_pixel;		//print max pixel value
 
 	/*
 	//write rest of data
@@ -425,7 +413,7 @@ int main(int argc, char* argv[])
 				}
 				break;
 
-			case 12:
+			case 12:									// blur
 				if (row_counter >= 0)
 				{
 					for (int c = 0; c < blur_extent; c++)
@@ -493,31 +481,57 @@ int main(int argc, char* argv[])
 				}
 				break;
 
-			case 13:			// pixelate
-				for (int i = 0; i < num_rows; i++)
+			case 13:											// pixelate
+				for (int i = 0; i < num_rows; i++) // horizontal pixelization
 				{
-					for (int j = 0; (j + (distance * 3)) <= num_cols; j += (distance * 3))	// horizontal pixelization
+					if ((distance * 3) > num_cols) // check if distance is more than total columns
 					{
-						for (int d = 1; d < distance; d++)
+						for (int j = 0; (j + 3) <= num_cols; j += 3)
 						{
-							data[i][j + (d * 3)] = temp[i][j];
-							data[i][(j + 1) + (d * 3)] = temp[i][j + 1];
-							data[i][(j + 2) + (d * 3)] = temp[i][j + 2];
+							data[i][j] = temp[i][0];
+							data[i][j + 1] = temp[i][1];
+							data[i][j + 2] = temp[i][2];
+						}
+					}
+					else
+					{
+						for (int j = 0; (j + (distance * 3)) <= num_cols; j += (distance * 3))
+						{
+							for (int d = 1; d < distance; d++)
+							{
+								data[i][j + (d * 3)] = temp[i][j];
+								data[i][(j + 1) + (d * 3)] = temp[i][j + 1];
+								data[i][(j + 2) + (d * 3)] = temp[i][j + 2];
+							}
 						}
 					}
 				}
-
-				for (int i = 0; (i + distance) <= num_rows; i += distance)
+																			// vertical pixelization
+				if (distance > num_rows)			// check if distance is more than total rows
 				{
-					for (int j = 0; j <= col_counter; j++)	// vertical pixelization
+					for (int j = 0; (j + 3) <= num_cols; j += 3)
 					{
-						for (int d = 0; d < distance; d++)
+						for (int i = 1; i < num_rows; i++)
 						{
-							data[i + d][j] = data[i][j];
+							data[i][j] = data[0][j];
+							data[i][j + 1] = data[0][j + 1];
+							data[i][j + 2] = data[0][j + 2];
 						}
 					}
 				}
-				
+				else
+				{
+					for (int i = 0; (i + distance) <= num_rows; i += distance)
+					{
+						for (int j = 0; j <= col_counter; j++)	
+						{
+							for (int d = 0; d < distance; d++)
+							{
+								data[i + d][j] = data[i][j];
+							}
+						}
+					}
+				}
 				break;
 
 			default:
@@ -526,12 +540,17 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	fout << format << endl;			// prints header
+	fout << width << " ";
+	fout << height << endl;
+	fout << max_pixel << endl;
+
 	for (int i = 0; i < data.size(); i++) //prints the data
 	{
 		for (int j = 0; j < data[i].size(); j++)
 		{
 			fout << " " << data[i][j];
-			if ((j + 1) % 12 == 0)
+			if ((j + 1) % (width * 3) == 0)
 			{
 				fout << endl;
 			}
