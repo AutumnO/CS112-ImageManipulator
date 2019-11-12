@@ -45,6 +45,8 @@ int main(int argc, char* argv[])
 	string format;
 	int width;
 	int height;
+	int end_width;
+	int end_height;
 	int max_pixel;
 	string next_line;
 
@@ -82,6 +84,9 @@ int main(int argc, char* argv[])
 	fin >> height;		// print height
 
 	fin >> max_pixel;		//print max pixel value
+
+	end_width = width;
+	end_height = height;
 
 	/*
 	//write rest of data
@@ -156,11 +161,17 @@ int main(int argc, char* argv[])
 	// *******************************
 
 	vector<vector<int>> data{};
+	vector<vector<int>> rotate_data{};
 	int num_rows = height;
 	int num_cols = (width * 3);
 
-	data.resize(num_rows);
+	rotate_data.resize(num_cols);
+	for (int i = 0; i < num_cols; i++)
+	{
+		rotate_data[i].resize(num_rows);
+	}
 
+	data.resize(num_rows);
 	for (int i = 0; i < num_rows; i++)
 	{
 		data[i].resize(num_cols);
@@ -196,6 +207,7 @@ int main(int argc, char* argv[])
 		<< "11. Flip Vertically" << endl
 		<< "12. Blur" << endl
 		<< "13. Pixelate" << endl
+		<< "14. Rotate 90" << endl
 		<< "Q. Quit" << endl;
 
 	while ((img_effect_str != "Q") && (img_effect_str != "q"))
@@ -247,6 +259,9 @@ int main(int argc, char* argv[])
 				break;
 			case 13:
 				img_effect_str = "Pixelate";
+				break;
+			case 14:
+				img_effect_str = "Rotate 90";
 				break;
 			default:
 				cout << "Invalid Effect Selection" << endl;
@@ -534,6 +549,42 @@ int main(int argc, char* argv[])
 				}
 				break;
 
+			case 14:					//rotate 90
+				end_width = height;
+				end_height = width;
+
+				for (int i = 0; i < num_rows; i++)
+				{
+					for (int j = 0; j < num_cols; j++)
+					{
+						for (int c = (0 - j); c < (width - j); c++) //FIX!!!!!
+						{
+							/* data[i][num_cols - 1] = temp[i][j];
+							data[i + 1][num_cols - 1] = temp[i][j + 1];
+							data[i + 2][num_cols - 1] = temp[i][j + 2];
+							data[i + 3][num_cols - 1] = temp[i][j]; //etc.
+
+							data[i - 1][num_cols - 2] = temp[i][j];
+							data[i][num_cols - 2] = temp[i][j + 1];
+							data[i + 1][num_cols - 2] = temp[i][j + 2];
+							data[i + 2][num_cols - 2] = temp[i][j]; //etc.
+
+							data[i - 2][num_cols - 3] = temp[i][j];
+							data[i - 1][num_cols - 3] = temp[i][j + 1];
+							data[i][num_cols - 3] = temp[i][j + 2];
+							data[i + 1][num_cols - 3] = temp[i][j];//etc. */
+
+							//data[something][increases with i] = temp[i][j];
+							cout << "NumCols: " << num_cols << " rotdataj: " << (num_cols - (i + 1))
+								<< "rotdatai: " << (i + c) << endl;
+							rotate_data[i + c][num_rows - (i + 1)] = data[i][j];
+							cout << "I" << i << " J" << j << ": " << data[i][j] << endl;
+						}
+					}
+				}
+				data = rotate_data;
+				break;
+
 			default:
 				cout << "Invalid Effect Selection" << endl;
 			}
@@ -541,8 +592,8 @@ int main(int argc, char* argv[])
 	}
 
 	fout << format << endl;			// prints header
-	fout << width << " ";
-	fout << height << endl;
+	fout << end_width << " ";
+	fout << end_height << endl;
 	fout << max_pixel << endl;
 
 	for (int i = 0; i < data.size(); i++) //prints the data
