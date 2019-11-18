@@ -214,6 +214,7 @@ int main(int argc, char* argv[])
 		int distance = 5;
 		int c = 0;
 		int temp_j;
+		int temp_height;
 
 		if (img_effect < 10)
 		{
@@ -357,7 +358,7 @@ int main(int argc, char* argv[])
 			case 12:									// blur
 				if (row_counter >= 0)
 				{
-					for (int c = 0; c < blur_extent; c++)
+					for (int c = 0; c < 1; c++)
 					{
 						temp = data;
 						for (int i = 0; i < data.size(); i++) // change for each row
@@ -485,8 +486,9 @@ int main(int argc, char* argv[])
 					rotate_data[i].resize(rot_cols);
 				}
 				
-				end_width = height;
-				end_height = width;
+				temp_height = end_height;	
+				end_height = end_width;
+				end_width = temp_height;
 
 				for (int i = 0; i < num_rows; i++)
 				{
