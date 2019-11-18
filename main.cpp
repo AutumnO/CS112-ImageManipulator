@@ -88,88 +88,12 @@ int main(int argc, char* argv[])
 	end_width = width;
 	end_height = height;
 
-	/*
-	//write rest of data
-
-	vector<string> data_line{};
-	vector<string> string_data{};
-	vector<int> temp_data_row{};
-	vector<int> int_all_data{};
-	vector<vector<int>> int_data{};
-	string line;
-	string current_line;
-	string temp;
-	int num_data;
-
-	while (fin.good() == true) //not EOF, not error, etc.
-	{
-		getline(fin, line);
-		data_line.push_back(line); // breaks data into individual lines
-		// TODO: breaking data into lines may not be necessary
-	}
-
-	for (int i = 0; i < data_line.size(); i++) //breaks apart lines of data into vector of individual strings
-	{
-		current_line = data_line[i];
-
-		for (int s = 0; s <= current_line.length(); s++)
-		{
-			if (s == current_line.length())
-			{
-				if (temp.length() > 0)
-				{
-					string_data.push_back(temp);
-					temp = "";
-				}
-			}
-			else if (current_line.at(s) != ' ' && current_line.at(s) != '	')
-			{
-				temp.push_back(current_line.at(s));
-			}
-			else if ((current_line.at(s) == ' ' || current_line.at(s) == '	') && temp.length() > 0)
-			{
-				string_data.push_back(temp);
-				temp = "";
-			}
-		}
-	}
-
-	for (int i = 0; i < string_data.size(); i++) //converts data vector of strings to data vector of ints
-	{
-		// TODO: check to make sure string_data[i] is an int
-		num_data = stoi(string_data[i]);
-		int_all_data.push_back(num_data);
-	}
-
-	for (int i = 0; i < int_all_data.size(); i++) //split int vector into row vectors
-	{
-		temp_data_row.push_back(int_all_data[i]);
-		cout << "M" << i << ": " << int_all_data[i] << endl;
-		if (i == width)
-		{
-			for (int k = 0; k < temp_data_row.size(); k++)
-			{
-				cout << k << ": " << temp_data_row[k] << endl;
-			}
-			
-			int_data.push_back(temp_data_row);
-			temp_data_row = {};
-		}
-	}
-	*/
-
-	// *******************************
-
 	vector<vector<int>> data{};
 	vector<vector<int>> rotate_data{};
 	int num_rows = height;
 	int num_cols = (width * 3);
-
-	rotate_data.resize(num_cols);
-	for (int i = 0; i < num_cols; i++)
-	{
-		rotate_data[i].resize(num_rows);
-	}
+	int rot_rows;
+	int rot_cols;
 
 	data.resize(num_rows);
 	for (int i = 0; i < num_rows; i++)
@@ -288,6 +212,8 @@ int main(int argc, char* argv[])
 		int noise_change;
 		int blur_extent = 10;
 		int distance = 5;
+		int c = 0;
+		int temp_j;
 
 		if (img_effect < 10)
 		{
@@ -550,38 +476,33 @@ int main(int argc, char* argv[])
 				break;
 
 			case 14:					//rotate 90
+				rot_rows = end_width;
+				rot_cols = (end_height * 3);
+
+				rotate_data.resize(rot_rows);
+				for (int i = 0; i < rot_rows; i++)
+				{
+					rotate_data[i].resize(rot_cols);
+				}
+				
 				end_width = height;
 				end_height = width;
 
 				for (int i = 0; i < num_rows; i++)
 				{
-					for (int j = 0; j < num_cols; j++)
+					for (int j = 0; j <= (num_cols - 3); j += 3)
 					{
-						for (int c = (0 - j); c < (width - j); c++) //FIX!!!!!
-						{
-							/* data[i][num_cols - 1] = temp[i][j];
-							data[i + 1][num_cols - 1] = temp[i][j + 1];
-							data[i + 2][num_cols - 1] = temp[i][j + 2];
-							data[i + 3][num_cols - 1] = temp[i][j]; //etc.
+						rotate_data[c][rot_cols - (3 * (i + 1))] = data[i][j];
+						rotate_data[c][rot_cols - ((3 * (i + 1)) - 1)] = data[i][j + 1];
+						rotate_data[c][rot_cols - ((3 * (i + 1)) - 2)] = data[i][j + 2];
 
-							data[i - 1][num_cols - 2] = temp[i][j];
-							data[i][num_cols - 2] = temp[i][j + 1];
-							data[i + 1][num_cols - 2] = temp[i][j + 2];
-							data[i + 2][num_cols - 2] = temp[i][j]; //etc.
-
-							data[i - 2][num_cols - 3] = temp[i][j];
-							data[i - 1][num_cols - 3] = temp[i][j + 1];
-							data[i][num_cols - 3] = temp[i][j + 2];
-							data[i + 1][num_cols - 3] = temp[i][j];//etc. */
-
-							//data[something][increases with i] = temp[i][j];
-							cout << "NumCols: " << num_cols << " rotdataj: " << (num_cols - (i + 1))
-								<< "rotdatai: " << (i + c) << endl;
-							rotate_data[i + c][num_rows - (i + 1)] = data[i][j];
-							cout << "I" << i << " J" << j << ": " << data[i][j] << endl;
-						}
+						c++;
 					}
+					c = 0;
 				}
+
+				num_rows = rot_rows;
+				num_cols = rot_cols;
 				data = rotate_data;
 				break;
 
@@ -601,11 +522,8 @@ int main(int argc, char* argv[])
 		for (int j = 0; j < data[i].size(); j++)
 		{
 			fout << " " << data[i][j];
-			if ((j + 1) % (width * 3) == 0)
-			{
-				fout << endl;
-			}
 		}
+		fout << endl;
 	}
 
 	fin.close();
