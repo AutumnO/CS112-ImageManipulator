@@ -7,6 +7,10 @@
 #include <ctime>
 using namespace std;
 
+// May want to create classes later
+// ****** My blur effect although running 10 times, seems less blurred than example pic
+// ****** smiley.ppm doesn't work (credit line?)
+// ****** better way to check pixelate needed, not sure if working correctly
 
 int range_check(int value)
 {
@@ -21,6 +25,15 @@ int range_check(int value)
 	return value;
 }
 
+vector<vector<int>> flip_horizontal(vector<vector<int>> data, int num_rows, int num_cols) // not currently used!!
+{
+	vector<vector<int>> temp = data;
+	int row_counter = (num_rows - 1);
+	int col_counter = (num_cols - 1);
+
+	return data;
+}
+
 int main(int argc, char* argv[])
 {
 	cout << boolalpha;
@@ -30,11 +43,10 @@ int main(int argc, char* argv[])
 	string img_effect_str;
 	int img_effect;
 	string format;
-	string width_line;
-	string height_line;
-	int width; // change these three to ints
+	int width;
 	int height;
-	string max_pixel_line;
+	int end_width;
+	int end_height;
 	int max_pixel;
 	string next_line;
 
@@ -65,82 +77,45 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	getline(fin, format);			//print image format
-	fout << format << endl;
+	fin >> format;			//print image format
 
-	getline(fin, width_line, ' ');		// print width
-	width = stoi(width_line);
-	fout << width << " ";
+	fin >> width;		// print width
 
-	getline(fin, height_line);		// print height
-	height = stoi(height_line);
-	fout << height << endl;
+	fin >> height;		// print height
 
-	getline(fin, max_pixel_line);		//print max pixel value
-	max_pixel = stoi(max_pixel_line);
-	fout << max_pixel << endl;
+	fin >> max_pixel;		//print max pixel value
 
-	// int x = stoi(max_pixel); -- example of how to use stoi from AC
+	end_width = width;
+	end_height = height;
 
-	//write rest of data
+	vector<vector<int>> data{};
+	vector<vector<int>> rotate_data{};
+	int num_rows = height;
+	int num_cols = (width * 3);
+	int rot_rows;
+	int rot_cols;
 
-	vector<string> data_line{};
-	vector<string> string_data{};
-	vector<int> int_data{};
-	string line;
-	string current_line;
-	string temp;
-	int num_data;
-
-	while (fin.good() == true) //not EOF, not error, etc.
+	data.resize(num_rows);
+	for (int i = 0; i < num_rows; i++)
 	{
-		getline(fin, line);
-		data_line.push_back(line); // breaks data into individual lines
-		// TODO: breaking data into lines may not be necessary
+		data[i].resize(num_cols);
 	}
 
-	for (int i = 0; i < data_line.size(); i++) //breaks apart lines of data into vector of individual strings
+	if (fin.good() == true)
 	{
-		current_line = data_line[i];
-
-		//cout << "Current Line: " << current_line << endl;
-
-		for (int s = 0; s <= current_line.length(); s++)
+		int next_num = 0;
+		for (int r = 0; r < num_rows; r++)
 		{
-			if (s == current_line.length())
+			for (int c = 0; c < num_cols; c++)
 			{
-				if (temp.length() > 0)
-				{
-					string_data.push_back(temp);
-					//cout << "Temp: " << temp << endl;
-					temp = "";
-				}
-			}
-			/*else if (s == current_line.length())
-			{
-				cout << "Temp: " << temp << endl;
-			}*/
-			else if (current_line.at(s) != ' ' && current_line.at(s) != '	')
-			{
-				temp.push_back(current_line.at(s));
-			}
-			else if ((current_line.at(s) == ' ' || current_line.at(s) == '	') && temp.length() > 0)
-			{
-				string_data.push_back(temp);
-				// cout << "Temp (>0): " << temp << endl;
-				temp = "";
+				fin >> next_num;
+				data[r][c] = next_num;
+				// cout << c << ": " << next_num << endl;
 			}
 		}
 	}
 
-	for (int i = 0; i < (string_data.size() - 1); i++) //converts data vector of strings to data vector of ints
-	{
-		// TODO: check to make sure string_data[i] is an int
-		num_data = stoi(string_data[i]);
-		int_data.push_back(num_data);
-
-		//cout << "S: " << string_data[i] << endl;
-	}
+	// *******************************
 
 	cout << endl << "*** Image Effects ***" << endl
 		<< "1. Remove Red" << endl
@@ -152,6 +127,11 @@ int main(int argc, char* argv[])
 		<< "7. Grayscale" << endl
 		<< "8. Add Noise" << endl
 		<< "9. High Contrast" << endl
+		<< "10. Flip Horizontally" << endl
+		<< "11. Flip Vertically" << endl
+		<< "12. Blur" << endl
+		<< "13. Pixelate" << endl
+		<< "14. Rotate 90" << endl
 		<< "Q. Quit" << endl;
 
 	while ((img_effect_str != "Q") && (img_effect_str != "q"))
@@ -192,6 +172,21 @@ int main(int argc, char* argv[])
 			case 9:
 				img_effect_str = "High Contrast";
 				break;
+			case 10:
+				img_effect_str = "Flip Horizontally";
+				break;
+			case 11:
+				img_effect_str = "Flip Vertically";
+				break;
+			case 12:
+				img_effect_str = "Blur";
+				break;
+			case 13:
+				img_effect_str = "Pixelate";
+				break;
+			case 14:
+				img_effect_str = "Rotate 90";
+				break;
 			default:
 				cout << "Invalid Effect Selection" << endl;
 				return EXIT_FAILURE;
@@ -206,106 +201,311 @@ int main(int argc, char* argv[])
 
 		// APPLY EFFECTS
 
-		int value_1;
-		int value_2;
-		int value_3;
-		int average;
-		int noise_change;
+		vector<vector<int>> temp = data; // *************
+		int row_counter = (num_rows - 1);
+		int col_counter = (num_cols - 1);
 
-		for (int i = 0; i < int_data.size(); i++)
+		int value_1 = 0;
+		int value_2 = 0;
+		int value_3 = 0;
+		int average = 0;
+		int noise_change;
+		int blur_extent = 10;
+		int distance = 5;
+		int c = 0;
+		int temp_j;
+		int temp_height;
+
+		if (img_effect < 10)
+		{
+			for (int i = 0; i < data.size(); i++)
+			{
+				for (int j = 0; j < data[i].size(); j++)
+				{
+					switch (img_effect)
+					{
+					case 1:
+						if (j % 3 == 0) //red values to zero
+						{
+							data[i][j] -= data[i][j];
+						}
+						break;
+
+					case 2:
+						if ((j + 2) % 3 == 0) //green values to zero
+						{
+							data[i][j] -= data[i][j];
+						}
+						break;
+
+					case 3:
+						if ((j + 1) % 3 == 0) //blue values to zero
+						{
+							data[i][j] -= data[i][j];
+						}
+						break;
+
+					case 4:
+						if (j % 3 == 0) //negate red
+						{
+							data[i][j] = 255 - data[i][j];
+						}
+						break;
+
+					case 5:
+						if ((j + 2) % 3 == 0) //negate green
+						{
+							data[i][j] = 255 - data[i][j];
+						}
+						break;
+
+					case 6:
+						if ((j + 1) % 3 == 0) //negate blue
+						{
+							data[i][j] = 255 - data[i][j];
+						}
+						break;
+
+					case 7:
+						if ((j % 3 == 0) && (j < data[i].size() - 2)) //grayscale
+						{
+							value_1 = data[i][j];
+							value_2 = data[i][j + 1];
+							value_3 = data[i][j + 2];
+							average = ((value_1 + value_2 + value_3) / 3);
+							data[i][j] = average;
+							data[i][j + 1] = average;
+							data[i][j + 2] = average; // 4 byte to 8 byte warning due to vs storing 1 as smaller value to save space
+						}
+						break;
+
+					case 8:
+						if ((j % 3 == 0) && (j < data[i].size() - 2)) //random noise
+						{
+							noise_change = (rand() % 20 - 10);
+
+							if ((noise_change >= -10) && (noise_change <= 10))
+							{
+								value_1 = data[i][j] += noise_change;
+								value_2 = data[i][j + 1] += noise_change;
+								value_3 = data[i][j + 2] += noise_change;
+
+								value_1 = range_check(value_1);
+								value_2 = range_check(value_2);
+								value_3 = range_check(value_3);
+
+								data[i][j] = value_1;
+								data[i][j + 1] = value_2;
+								data[i][j + 2] = value_3;
+							}
+							else
+							{
+								cout << "Out of range Rand Value" << endl;
+							}
+						}
+						break;
+
+					case 9:
+						if (data[i][j] > (255 / 2))
+						{
+							data[i][j] = 255;
+						}
+						else
+						{
+							data[i][j] = 0;
+						}
+						break;
+
+					default:
+						cout << "Invalid Effect Selection" << endl;
+					}
+				}
+			}
+		}
+		else if (img_effect >= 10)
 		{
 			switch (img_effect)
 			{
-			case 1:
-				if (i % 3 == 0) //red values to zero
+			case 10:									// flip horizontally
+				if (row_counter >= 0)
 				{
-					int_data[i] -= int_data[i];
-				}
-				break;
-
-			case 2:
-				if ((i + 2) % 3 == 0) //green values to zero
-				{
-					int_data[i] -= int_data[i];
-				}
-				break;
-
-			case 3:
-				if ((i + 1) % 3 == 0) //blue values to zero
-				{
-					int_data[i] -= int_data[i];
-				}
-				break;
-
-			case 4:
-				if (i % 3 == 0) //negate red
-				{
-					int_data[i] = 255 - int_data[i];
-				}
-				break;
-
-			case 5:
-				if ((i + 2) % 3 == 0) //negate green
-				{
-					int_data[i] = 255 - int_data[i];
-				}
-				break;
-
-			case 6:
-				if ((i + 1) % 3 == 0) //negate blue
-				{
-					int_data[i] = 255 - int_data[i];
-				}
-				break;
-
-			case 7:
-				if ((i % 3 == 0) && (i < int_data.size() - 2)) //grayscale
-				{
-					value_1 = int_data[i];
-					value_2 = int_data[i + 1];
-					value_3 = int_data[i + 2];
-					average = ((value_1 + value_2 + value_3) / 3);
-					int_data[i] = average;
-					int_data[i + 1] = average;
-					int_data[i + 2] = average; // 4 byte to 8 byte warning due to vs storing 1 as smaller value to save space
-				}
-				break;
-
-			case 8:
-				if ((i % 3 == 0) && (i < int_data.size() - 2)) //random noise
-				{
-					noise_change = (rand() % 20 - 10);
-
-					if ((noise_change >= -10) && (noise_change <= 10))
+					for (int i = 0; i < temp.size(); i++)
 					{
-						value_1 = int_data[i] += noise_change;
-						value_2 = int_data[i + 1] += noise_change;
-						value_3 = int_data[i + 2] += noise_change;
+						col_counter = (num_cols - 1);
+						for (int j = 0; j < temp[i].size(); j += 3)
+						{
+							data[i][col_counter - 2] = temp[i][j];
+							data[i][col_counter - 1] = temp[i][j + 1];
+							data[i][col_counter] = temp[i][j + 2];
+							col_counter -= 3;
+						}
+						row_counter -= 1;
+					}
+				}
+				break;
 
-						value_1 = range_check(value_1);
-						value_2 = range_check(value_2);
-						value_3 = range_check(value_3);
+			case 11:									// flip vertically
+				if (row_counter >= 0)
+				{
+					for (int i = 0; i < temp.size(); i++)
+					{
+						data[row_counter] = temp[i];
+						row_counter -= 1;
+					}
+				}
+				break;
 
-						int_data[i] = value_1;
-						int_data[i + 1] = value_2;
-						int_data[i + 2] = value_3;
+			case 12:									// blur
+				if (row_counter >= 0)
+				{
+					for (int c = 0; c < 1; c++)
+					{
+						temp = data;
+						for (int i = 0; i < data.size(); i++) // change for each row
+						{
+							for (int j = 0; j < data[i].size(); j++)
+							{
+								if ((j == 0) || (j == 1) || (j == 2))
+								{
+									value_1 = temp[i][j];
+									value_2 = temp[i][j + 3];
+									average = ((value_1 + value_2) / 2);
+									data[i][j] = average;
+								}
+								else if ((j == col_counter) || (j == (col_counter - 1)) || (j == (col_counter - 2)))
+								{
+									value_1 = temp[i][j - 3];
+									value_2 = temp[i][j];
+									average = ((value_1 + value_2) / 2);
+									data[i][j] = average;
+								}
+								else
+								{
+									value_1 = temp[i][j - 3];
+									value_2 = temp[i][j];
+									value_3 = temp[i][j + 3];
+									average = ((value_1 + value_2 + value_3) / 3);
+									data[i][j] = average;
+								}
+							}
+						}
+
+						temp = data;
+						for (int j = 0; j < num_cols; j++) // change for each column
+						{
+							for (int i = 0; i < num_rows; i++)
+							{
+								if (i == 0)
+								{
+									value_1 = temp[i][j];
+									value_2 = temp[i + 1][j];
+									average = ((value_1 + value_2) / 2);
+									data[i][j] = average;
+								}
+								else if (i == (num_rows - 1))
+								{
+									value_1 = temp[i - 1][j];
+									value_2 = temp[i][j];
+									average = ((value_1 + value_2) / 2);
+									data[i][j] = average;
+								}
+								else
+								{
+									value_1 = temp[i - 1][j];
+									value_2 = temp[i][j];
+									value_3 = temp[i + 1][j];
+									average = ((value_1 + value_2 + value_3) / 3);
+									data[i][j] = average;
+								}
+							}
+						}
+					}
+				}
+				break;
+
+			case 13:											// pixelate
+				for (int i = 0; i < num_rows; i++) // horizontal pixelization
+				{
+					if ((distance * 3) > num_cols) // check if distance is more than total columns
+					{
+						for (int j = 0; (j + 3) <= num_cols; j += 3)
+						{
+							data[i][j] = temp[i][0];
+							data[i][j + 1] = temp[i][1];
+							data[i][j + 2] = temp[i][2];
+						}
 					}
 					else
 					{
-						cout << "Out of range Rand Value" << endl;
+						for (int j = 0; (j + (distance * 3)) <= num_cols; j += (distance * 3))
+						{
+							for (int d = 1; d < distance; d++)
+							{
+								data[i][j + (d * 3)] = temp[i][j];
+								data[i][(j + 1) + (d * 3)] = temp[i][j + 1];
+								data[i][(j + 2) + (d * 3)] = temp[i][j + 2];
+							}
+						}
+					}
+				}
+																			// vertical pixelization
+				if (distance > num_rows)			// check if distance is more than total rows
+				{
+					for (int j = 0; (j + 3) <= num_cols; j += 3)
+					{
+						for (int i = 1; i < num_rows; i++)
+						{
+							data[i][j] = data[0][j];
+							data[i][j + 1] = data[0][j + 1];
+							data[i][j + 2] = data[0][j + 2];
+						}
+					}
+				}
+				else
+				{
+					for (int i = 0; (i + distance) <= num_rows; i += distance)
+					{
+						for (int j = 0; j <= col_counter; j++)	
+						{
+							for (int d = 0; d < distance; d++)
+							{
+								data[i + d][j] = data[i][j];
+							}
+						}
 					}
 				}
 				break;
 
-			case 9:
-				if (int_data[i] > (255 / 2))
+			case 14:					//rotate 90
+				rot_rows = end_width;
+				rot_cols = (end_height * 3);
+
+				rotate_data.resize(rot_rows);
+				for (int i = 0; i < rot_rows; i++)
 				{
-					int_data[i] = 255;
+					rotate_data[i].resize(rot_cols);
 				}
-				else
+				
+				temp_height = end_height;	
+				end_height = end_width;
+				end_width = temp_height;
+
+				for (int i = 0; i < num_rows; i++)
 				{
-					int_data[i] = 0;
+					for (int j = 0; j <= (num_cols - 3); j += 3)
+					{
+						rotate_data[c][rot_cols - (3 * (i + 1))] = data[i][j];
+						rotate_data[c][rot_cols - ((3 * (i + 1)) - 1)] = data[i][j + 1];
+						rotate_data[c][rot_cols - ((3 * (i + 1)) - 2)] = data[i][j + 2];
+
+						c++;
+					}
+					c = 0;
 				}
+
+				num_rows = rot_rows;
+				num_cols = rot_cols;
+				data = rotate_data;
 				break;
 
 			default:
@@ -314,13 +514,18 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	for (int i = 0; i < int_data.size(); i++) //prints the data
+	fout << format << endl;			// prints header
+	fout << end_width << " ";
+	fout << end_height << endl;
+	fout << max_pixel << endl;
+
+	for (int i = 0; i < data.size(); i++) //prints the data
 	{
-		fout << " " << int_data[i];
-		if ((i + 1) % 12 == 0)
+		for (int j = 0; j < data[i].size(); j++)
 		{
-			fout << endl;
+			fout << " " << data[i][j];
 		}
+		fout << endl;
 	}
 
 	fin.close();
