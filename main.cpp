@@ -11,6 +11,7 @@ using namespace std;
 // ****** My blur effect although running 10 times, seems less blurred than example pic
 // ****** smiley.ppm doesn't work (credit line?)
 // ****** better way to check pixelate needed, not sure if working correctly
+// ****** replace 255 with max_pixel_value
 
 int range_check(int value)
 {
